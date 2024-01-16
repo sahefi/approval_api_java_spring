@@ -1,10 +1,9 @@
 package approval_api.approval_api.model;
 
-
 import java.util.UUID;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -17,19 +16,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 
-public class RegisterUserRequest {
+public class UpdateRoleRequest {
+    
+    @JsonDeserialize
+    private UUID id;
 
     @NotBlank
     private String name;
-
-    @NotBlank
-    private String username;
-
-    @NotBlank
-    private String password;
-
-    private UUID role_id;
-    
-    
-
 }

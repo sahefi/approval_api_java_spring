@@ -1,7 +1,6 @@
 package approval_api.approval_api.model;
 
-import java.util.List;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,18 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 
-public class WebResponse<T> {
+public class CreateRoleRequest {
 
-    private String status;
-
-    private String message;
-
-    private T data;
-
-    private String errors;
-
-   
-
+    @NotBlank
+    private String name;
 
 
 }

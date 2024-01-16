@@ -1,6 +1,8 @@
 package approval_api.approval_api.model;
 
-import java.util.List;
+import java.util.UUID;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,18 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 
-public class WebResponse<T> {
+public class DeleteRoleRequest {
 
-    private String status;
-
-    private String message;
-
-    private T data;
-
-    private String errors;
-
-   
-
-
-
+    @JsonDeserialize
+    private UUID id;
 }

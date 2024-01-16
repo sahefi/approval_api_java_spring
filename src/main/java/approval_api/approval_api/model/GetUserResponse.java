@@ -1,7 +1,5 @@
 package approval_api.approval_api.model;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,19 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+public class GetUserResponse {
+    private String name;
 
-public class WebResponse<T> {
+    private String username;
 
-    private String status;
-
-    private String message;
-
-    private T data;
-
-    private String errors;
-
-   
-
-
-
+    private String role_name;
 }

@@ -1,6 +1,6 @@
 package approval_api.approval_api.model;
 
-import java.util.List;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,18 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 
-public class WebResponse<T> {
-
-    private String status;
-
-    private String message;
-
-    private T data;
-
-    private String errors;
-
-   
-
-
-
+public class GetRoleResponse {
+    
+    private UUID id;
+    
+    private String name;
 }
