@@ -1,9 +1,9 @@
 package approval_api.approval_api.model;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
+import approval_api.approval_api.model.RegisterUserResponse.RoleResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +13,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetUserResponse {
-    private UUID id;
 
+public class UpdateUserResponse {
+
+    @JsonProperty("name")
     private String name;
 
+    @JsonProperty("username")
     private String username;
 
+    @JsonProperty("role")
     private RoleResponse role;
 
     @Data
@@ -31,11 +34,5 @@ public class GetUserResponse {
         @JsonProperty("name")
         private String role_name;
     }
-    public RoleResponse getRole() {
-        return role;
-    }
 
-    public void setRole(RoleResponse role) {
-        this.role = role;
-    }
 }

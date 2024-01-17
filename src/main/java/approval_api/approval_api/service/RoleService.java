@@ -82,7 +82,7 @@ public class RoleService {
 
     @Transactional
     public void delete(DeleteRoleRequest request){
-        validationService.validate(request);
+    
 
         Role role = roleRepository.findById(request.getId())
             .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Role ID Not Found"));

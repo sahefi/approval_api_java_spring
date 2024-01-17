@@ -84,7 +84,7 @@ public class RoleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse DeleteRole(@RequestBody DeleteRoleRequest request) {
+    public WebResponse deleteRole(@RequestBody DeleteRoleRequest request) {
         roleService.delete(request);
         return WebResponse
                 .builder()
