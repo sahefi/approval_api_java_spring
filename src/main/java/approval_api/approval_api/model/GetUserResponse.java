@@ -31,11 +31,4 @@ public class GetUserResponse {
         @JsonProperty("name")
         private String role_name;
     }
-    public RoleResponse getRole() {
-        return role;
-    }
-
-    public void setRole(RoleResponse role) {
-        this.role = role;
-    }
 }

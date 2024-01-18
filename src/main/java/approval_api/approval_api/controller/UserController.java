@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import approval_api.approval_api.model.DeleteRoleRequest;
 import approval_api.approval_api.model.DeleteUserRequest;
 import approval_api.approval_api.model.GetUserResponse;
 import approval_api.approval_api.model.RegisterUserRequest;

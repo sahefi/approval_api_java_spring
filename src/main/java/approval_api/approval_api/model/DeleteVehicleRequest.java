@@ -1,6 +1,8 @@
 package approval_api.approval_api.model;
 
+import java.util.UUID;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,18 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 
-public class WebResponse<T> {
+public class DeleteVehicleRequest {
 
-    private String status;
-
-    private String message;
-
-    private T data;
-
-    private String errors;
-
-   
-
-
-
+    @NotNull(message = "ID Canoot Be Null")
+    private UUID id;
+    
 }

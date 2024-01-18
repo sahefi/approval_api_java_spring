@@ -2,8 +2,6 @@ package approval_api.approval_api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-import approval_api.approval_api.model.RegisterUserResponse.RoleResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

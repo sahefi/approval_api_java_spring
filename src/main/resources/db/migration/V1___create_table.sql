@@ -22,15 +22,14 @@ CREATE TABLE IF NOT EXISTS "users"
 );
 
 
-CREATE TYPE vehicle_type AS ENUM ('stuff', 'people');
 
 CREATE TABLE IF NOT EXISTS "vehicles"   
 (
     id               UUID,
     name             VARCHAR(100) NOT NULL,
-    type             vehicle_type NOT NULL,
     fuel_consumption DECIMAL(10, 2) NOT NULL,
     service_schedule TIMESTAMP NOT NULL,
+    status VARCHAR(10) NOT NULL CHECK (status IN ('BOOKED', 'AVAILABLE')),
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
@@ -46,10 +45,9 @@ CREATE TABLE IF NOT EXISTS "bookings"
     applicant   VARCHAR(100) NOT NULL,
     vehicle_id UUID,
     approver_id UUID,
-    is_approved BOOLEAN NOT NULL DEFAULT FALSE,
-    need_approval BOOLEAN NOT NULL DEFAULT TRUE,
-    start_book TIMESTAMP NOT NULL,
-    end_book TIMESTAMP NOT NULL,
+    start_book DATE NOT NULL,
+    end_book DATE NOT NULL,
+    status VARCHAR(10) NOT NULL CHECK (status IN ('PENDING', 'APPROVED','REJECTED')),
     created_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
