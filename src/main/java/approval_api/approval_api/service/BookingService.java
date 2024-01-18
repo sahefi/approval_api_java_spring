@@ -2,13 +2,22 @@ package approval_api.approval_api.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import approval_api.approval_api.common.UserInfo;
 import approval_api.approval_api.entity.Booking;
 import approval_api.approval_api.entity.Role;
 import approval_api.approval_api.entity.User;
@@ -17,6 +26,7 @@ import approval_api.approval_api.entity.Booking.BookStatus;
 import approval_api.approval_api.entity.Vehicle.VehicleStatus;
 import approval_api.approval_api.model.CreateBookingRequest;
 import approval_api.approval_api.model.CreateBookingResponse;
+import approval_api.approval_api.model.GetBookingApporverResponse;
 import approval_api.approval_api.repository.BookingRepository;
 import approval_api.approval_api.repository.UserRepository;
 import approval_api.approval_api.repository.VehicleRepository;
@@ -85,6 +95,8 @@ public class BookingService {
         book.setEndBook(parsedEnd);
         book.setStatus(BookStatus.PENDING);
 
+        bookingRepository.save(book);
+
         return CreateBookingResponse.builder()
             .driver(book.getDriver())
             .applicant(book.getApplicant())
@@ -99,5 +111,28 @@ public class BookingService {
                 .build():null)   
             .build();
 
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GetBookingApporverResponse> getApprover(UserInfo userInfo, int page,int size){
+        UUID userId = userInfo.getUserId();
+        Pageable pageable = PageRequest.of(page, size,Sort.by("applicant").ascending());
+        Page<Booking> bookingPage = bookingRepository.findAllByApproverId(userId,pageable);
+        List<GetBookingApporverResponse> getBookingApporverResponses = bookingPage.getContent().stream()
+                .map(booking -> GetBookingApporverResponse.builder()
+                    .applicant(booking.getApplicant())
+                    .driver(booking.getDriver())
+                    .vehicle((booking.getVehicle() != null) ? GetBookingApporverResponse.VehicleResponse.builder()
+                        .vehicle_name(booking.getVehicle().getName())
+                        .build():null) 
+                    .start_book(booking.getStartBook())
+                    .end_book(booking.getEndBook())                  
+                    .build())
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(getBookingApporverResponses, pageable, size);
+            
+
+        
     }
 }

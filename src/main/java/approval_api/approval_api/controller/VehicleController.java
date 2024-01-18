@@ -1,5 +1,7 @@
 package approval_api.approval_api.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +21,7 @@ import approval_api.approval_api.model.GetVehicleResponse;
 import approval_api.approval_api.model.UpdateVehicleRequest;
 import approval_api.approval_api.model.UpdateVehicleResponse;
 import approval_api.approval_api.model.WebResponse;
+import approval_api.approval_api.resolver.Token;
 import approval_api.approval_api.service.VehicleService;
 
 @RestController
@@ -32,7 +36,7 @@ public class VehicleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
         )
-    public WebResponse<CreateVehicleResponse> register(@RequestBody CreateVehicleRequest request){
+    public WebResponse<CreateVehicleResponse> register(@Token String token,@RequestBody CreateVehicleRequest request ){
         CreateVehicleResponse createVehicleResponse = vehicleService.create(request);
         return WebResponse.<CreateVehicleResponse>builder().status("true").message("Success").data(createVehicleResponse).build();
     }

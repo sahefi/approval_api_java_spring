@@ -3,6 +3,7 @@ package approval_api.approval_api.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import approval_api.approval_api.model.GetVehicleResponse;
 import approval_api.approval_api.model.UpdateVehicleRequest;
 import approval_api.approval_api.model.UpdateVehicleResponse;
 import approval_api.approval_api.repository.VehicleRepository;
+import approval_api.approval_api.resolver.Token;
 
 @Service
 
@@ -39,6 +41,8 @@ public class VehicleService {
     @Transactional
     public CreateVehicleResponse create(CreateVehicleRequest request){
         validationService.validate(request);
+
+        
 
         LocalDate currenDate = LocalDate.now();
         DateTimeFormatter currentFormatted = DateTimeFormatter.ofPattern("dd-MM-yyyy");
