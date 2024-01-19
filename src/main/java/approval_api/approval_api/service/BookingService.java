@@ -2,6 +2,7 @@ package approval_api.approval_api.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +26,15 @@ import approval_api.approval_api.entity.User;
 import approval_api.approval_api.entity.Vehicle;
 import approval_api.approval_api.entity.Booking.BookStatus;
 import approval_api.approval_api.entity.Vehicle.VehicleStatus;
+import approval_api.approval_api.model.BookingFilterRequest;
 import approval_api.approval_api.model.CreateBookingRequest;
 import approval_api.approval_api.model.CreateBookingResponse;
 import approval_api.approval_api.model.GetBookingApporverResponse;
+import approval_api.approval_api.model.RespondBookingRequest;
 import approval_api.approval_api.repository.BookingRepository;
 import approval_api.approval_api.repository.UserRepository;
 import approval_api.approval_api.repository.VehicleRepository;
+import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class BookingService {
@@ -95,6 +100,9 @@ public class BookingService {
         book.setEndBook(parsedEnd);
         book.setStatus(BookStatus.PENDING);
 
+        vehicle.setStatus(VehicleStatus.BOOKED);
+
+        vehicleRepository.save(vehicle);
         bookingRepository.save(book);
 
         return CreateBookingResponse.builder()
@@ -114,19 +122,36 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GetBookingApporverResponse> getApprover(UserInfo userInfo, int page,int size){
-        UUID userId = userInfo.getUserId();
+    public Page<GetBookingApporverResponse> getApprover( int page,int size,BookingFilterRequest request,UserInfo userInfo){
+
+        Specification<Booking>specification = (root,query,builder) ->{
+            List<Predicate>predicates = new ArrayList<>();
+            if(request.getStatus() != null){
+                predicates.add(builder.equal((root.get("status")),request.getStatus()));
+            }
+
+            predicates.add(builder.equal(root.get("approver").get("id"), userInfo.getUserId()));
+
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        };
+
         Pageable pageable = PageRequest.of(page, size,Sort.by("applicant").ascending());
-        Page<Booking> bookingPage = bookingRepository.findAllByApproverId(userId,pageable);
+
+        Page<Booking> bookingPage = bookingRepository.findAll(specification,pageable);
+        
+        System.out.println("============");
+        System.out.println(request.getStatus());
         List<GetBookingApporverResponse> getBookingApporverResponses = bookingPage.getContent().stream()
                 .map(booking -> GetBookingApporverResponse.builder()
+                    .id(booking.getId())
                     .applicant(booking.getApplicant())
                     .driver(booking.getDriver())
                     .vehicle((booking.getVehicle() != null) ? GetBookingApporverResponse.VehicleResponse.builder()
                         .vehicle_name(booking.getVehicle().getName())
                         .build():null) 
                     .start_book(booking.getStartBook())
-                    .end_book(booking.getEndBook())                  
+                    .end_book(booking.getEndBook()) 
+                    .status(booking.getStatus())                 
                     .build())
                 .collect(Collectors.toList());
 
@@ -134,5 +159,17 @@ public class BookingService {
             
 
         
+    }
+
+    @Transactional
+    public void respondRequestBooking (UserInfo userInfo,RespondBookingRequest request){
+
+        Booking booking = bookingRepository.findById(request.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Booking ID Not Found"));
+
+        booking.setStatus(request.getStatus());
+
+        bookingRepository.save(booking);
+
     }
 }

@@ -1,10 +1,12 @@
 package approval_api.approval_api.model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import approval_api.approval_api.entity.Booking.BookStatus;
 import approval_api.approval_api.model.CreateBookingResponse.VehicleResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +19,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GetBookingApporverResponse {
     
+    private UUID id;
+    
     private String applicant;
 
     private String driver;
@@ -28,6 +32,8 @@ public class GetBookingApporverResponse {
 
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate end_book;
+
+    private BookStatus status;
 
     @Data
     @AllArgsConstructor

@@ -5,14 +5,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import approval_api.approval_api.common.UserInfo;
+import approval_api.approval_api.entity.Booking.BookStatus;
+import approval_api.approval_api.model.BookingFilterRequest;
 import approval_api.approval_api.model.CreateBookingRequest;
 import approval_api.approval_api.model.CreateBookingResponse;
 import approval_api.approval_api.model.GetBookingApporverResponse;
+import approval_api.approval_api.model.RespondBookingRequest;
+import approval_api.approval_api.model.UpdateUserRequest;
+import approval_api.approval_api.model.UpdateUserResponse;
 import approval_api.approval_api.model.WebResponse;
 import approval_api.approval_api.resolver.Token;
 import approval_api.approval_api.service.AuthService;
@@ -46,13 +52,18 @@ public class BookingController {
             path = "/api/book",
             produces = MediaType.APPLICATION_JSON_VALUE
             )
-        public WebResponse<Page<GetBookingApporverResponse>> ListBookingApprover(
+        public WebResponse<Page<GetBookingApporverResponse>> listBookingApprover(
             @Token String token,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam (required = false) BookStatus status
             ) {
+                BookingFilterRequest request = BookingFilterRequest.builder()
+                    .status(status)
+                    .build();
+
                 UserInfo userInfo = authService.extractUserIdFromToken(token);             
-                Page<GetBookingApporverResponse> getBookingApproverResponse = bookingService.getApprover( userInfo,page,size);
+                Page<GetBookingApporverResponse> getBookingApproverResponse = bookingService.getApprover( page,size,request,userInfo);
                 return WebResponse.<Page<GetBookingApporverResponse>>
                         builder()
                         .status("true")
@@ -60,6 +71,23 @@ public class BookingController {
                         .data(getBookingApproverResponse)
                         .build();
         }
+
+        @PutMapping(
+        path = "/api/book",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+
+        public WebResponse respondRequestBooking(@Token String token, @RequestBody RespondBookingRequest request) {
+            UserInfo userInfo = authService.extractUserIdFromToken(token);
+            bookingService.respondRequestBooking(userInfo,request);
+            return WebResponse
+                    .builder()
+                    .status("true")
+                    .message("Success")
+                    .data(null)
+                    .build();
+    }
 
 }
 
