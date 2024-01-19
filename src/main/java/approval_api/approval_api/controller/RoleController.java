@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 
+import approval_api.approval_api.common.UserInfo;
 import approval_api.approval_api.model.CreateRoleRequest;
 import approval_api.approval_api.model.CreateRoleResponse;
 import approval_api.approval_api.model.DeleteRoleRequest;
@@ -13,6 +14,8 @@ import approval_api.approval_api.model.GetRoleResponse;
 import approval_api.approval_api.model.UpdateRoleRequest;
 import approval_api.approval_api.model.UpdateRoleResponse;
 import approval_api.approval_api.model.WebResponse;
+import approval_api.approval_api.resolver.AuthRole;
+import approval_api.approval_api.resolver.Token;
 import approval_api.approval_api.service.RoleService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +37,7 @@ public class RoleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse createRole(@RequestBody CreateRoleRequest request) {
+    public WebResponse createRole(@Token String token, @RequestBody CreateRoleRequest request) {
         CreateRoleResponse createRoleResponse = roleService.create(request);
         return WebResponse.<CreateRoleResponse>
                 builder()
@@ -49,6 +52,8 @@ public class RoleController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public WebResponse<Page<GetRoleResponse>> listRole(
+        @Token String token,
+        @AuthRole("Admin") String role,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
@@ -67,7 +72,7 @@ public class RoleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse updateRole(@RequestBody UpdateRoleRequest request) {
+    public WebResponse updateRole(@Token String token ,@RequestBody UpdateRoleRequest request) {
         UpdateRoleResponse updateRoleResponse = roleService.update(request);
         return WebResponse.<UpdateRoleResponse>
                 builder()
@@ -82,7 +87,7 @@ public class RoleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse deleteRole(@RequestBody DeleteRoleRequest request) {
+    public WebResponse deleteRole(@Token String token,@RequestBody DeleteRoleRequest request) {
         roleService.delete(request);
         return WebResponse
                 .builder()

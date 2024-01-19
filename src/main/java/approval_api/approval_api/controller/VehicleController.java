@@ -46,6 +46,7 @@ public class VehicleController {
         produces = MediaType.APPLICATION_JSON_VALUE
         )
     public WebResponse<Page<GetVehicleResponse>> ListUser(
+        @Token String token,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
         ) {
@@ -65,7 +66,7 @@ public class VehicleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse updateVehicle(@RequestBody UpdateVehicleRequest request) {
+    public WebResponse updateVehicle(@Token String token,@RequestBody UpdateVehicleRequest request) {
         UpdateVehicleResponse updateVehicleResponse = vehicleService.update(request);
         return WebResponse.<UpdateVehicleResponse>
                 builder()
@@ -80,7 +81,7 @@ public class VehicleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse deleteUser(@RequestBody DeleteVehicleRequest request) {
+    public WebResponse deleteUser(@Token String token,@RequestBody DeleteVehicleRequest request) {
         vehicleService.delete(request);
         return WebResponse
                 .builder()

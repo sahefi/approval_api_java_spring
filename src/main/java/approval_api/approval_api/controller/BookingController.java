@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import approval_api.approval_api.common.UserInfo;
 import approval_api.approval_api.entity.Booking.BookStatus;
+import approval_api.approval_api.model.BookingAdminFIlterRequest;
 import approval_api.approval_api.model.BookingFilterRequest;
 import approval_api.approval_api.model.CreateBookingRequest;
 import approval_api.approval_api.model.CreateBookingResponse;
+import approval_api.approval_api.model.GetBookingAdminResponse;
 import approval_api.approval_api.model.GetBookingApporverResponse;
 import approval_api.approval_api.model.RespondBookingRequest;
 import approval_api.approval_api.model.UpdateUserRequest;
@@ -39,7 +41,7 @@ public class BookingController {
         produces = MediaType.APPLICATION_JSON_VALUE
 
         )
-    public WebResponse<CreateBookingResponse> register(@Token @RequestBody CreateBookingRequest request){
+    public WebResponse<CreateBookingResponse> register(@Token String token, @RequestBody CreateBookingRequest request){
         CreateBookingResponse createBookingResponse = bookingService.create(request);
         return WebResponse.<CreateBookingResponse>builder()
             .status("true")
@@ -49,7 +51,7 @@ public class BookingController {
     }
 
         @GetMapping(
-            path = "/api/book",
+            path = "/api/book/approver",
             produces = MediaType.APPLICATION_JSON_VALUE
             )
         public WebResponse<Page<GetBookingApporverResponse>> listBookingApprover(
@@ -88,6 +90,31 @@ public class BookingController {
                     .data(null)
                     .build();
     }
+
+    @GetMapping(
+            path = "/api/book/admin",
+            produces = MediaType.APPLICATION_JSON_VALUE
+            )
+        public WebResponse<Page<GetBookingAdminResponse>> listBookingAdmin(
+            @Token String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam (required = false) BookStatus status,
+            @RequestParam (value = "approver",required = false) String approver
+            ) {
+                BookingAdminFIlterRequest request = BookingAdminFIlterRequest.builder()
+                    .status(status)
+                    .approver(approver)
+                    .build();             
+                Page<GetBookingAdminResponse> getBookingAdminResponse = bookingService.getApproverAdmin( page,size,request);
+                return WebResponse.<Page<GetBookingAdminResponse>>
+                        builder()
+                        .status("true")
+                        .message("Success")
+                        .data(getBookingAdminResponse)
+                        .build();
+        }
+
 
 }
 

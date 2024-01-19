@@ -26,14 +26,18 @@ import approval_api.approval_api.entity.User;
 import approval_api.approval_api.entity.Vehicle;
 import approval_api.approval_api.entity.Booking.BookStatus;
 import approval_api.approval_api.entity.Vehicle.VehicleStatus;
+import approval_api.approval_api.model.BookingAdminFIlterRequest;
 import approval_api.approval_api.model.BookingFilterRequest;
 import approval_api.approval_api.model.CreateBookingRequest;
 import approval_api.approval_api.model.CreateBookingResponse;
+import approval_api.approval_api.model.GetBookingAdminResponse;
 import approval_api.approval_api.model.GetBookingApporverResponse;
 import approval_api.approval_api.model.RespondBookingRequest;
 import approval_api.approval_api.repository.BookingRepository;
 import approval_api.approval_api.repository.UserRepository;
 import approval_api.approval_api.repository.VehicleRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 
 @Service
@@ -139,8 +143,6 @@ public class BookingService {
 
         Page<Booking> bookingPage = bookingRepository.findAll(specification,pageable);
         
-        System.out.println("============");
-        System.out.println(request.getStatus());
         List<GetBookingApporverResponse> getBookingApporverResponses = bookingPage.getContent().stream()
                 .map(booking -> GetBookingApporverResponse.builder()
                     .id(booking.getId())
@@ -155,7 +157,7 @@ public class BookingService {
                     .build())
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(getBookingApporverResponses, pageable, size);
+        return new PageImpl<>(getBookingApporverResponses, pageable,bookingPage.getTotalElements());
             
 
         
@@ -171,5 +173,49 @@ public class BookingService {
 
         bookingRepository.save(booking);
 
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GetBookingAdminResponse> getApproverAdmin( int page,int size,BookingAdminFIlterRequest request){
+
+        Specification<Booking>specification = (root,query,builder) ->{
+            List<Predicate>predicates = new ArrayList<>();
+            if(request.getStatus() != null){
+                predicates.add(builder.equal((root.get("status")),request.getStatus()));
+            }
+
+            if(request.getApprover() != null){
+                Join<Booking, User> userJoin = root.join("approver", JoinType.INNER);
+                predicates.add(builder.like(builder.lower(userJoin.get("name")), "%" + request.getApprover().toLowerCase() + "%"));
+            }
+
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        };
+
+        Pageable pageable = PageRequest.of(page, size,Sort.by("applicant").ascending());
+
+        Page<Booking> bookingsPage = bookingRepository.findAll(specification,pageable);
+        
+        List<GetBookingAdminResponse> getBookingAdminResponses = bookingsPage.getContent().stream()
+                .map(booking -> GetBookingAdminResponse.builder()
+                    .id(booking.getId())
+                    .applicant(booking.getApplicant())
+                    .driver(booking.getDriver())
+                    .vehicle((booking.getVehicle() != null) ? GetBookingAdminResponse.VehicleResponse.builder()
+                        .vehicle_name(booking.getVehicle().getName())
+                        .build():null) 
+                    .approver((booking.getApprover() != null) ? GetBookingAdminResponse.ApproverResponse.builder()
+                        .approver_name(booking.getApprover().getName())
+                        .build():null)
+                    .start_book(booking.getStartBook())
+                    .end_book(booking.getEndBook()) 
+                    .status(booking.getStatus())                 
+                    .build())
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(getBookingAdminResponses, pageable,bookingsPage.getTotalElements());
+            
+
+        
     }
 }

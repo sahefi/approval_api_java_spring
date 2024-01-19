@@ -17,6 +17,8 @@ import approval_api.approval_api.model.UpdateUserRequest;
 import approval_api.approval_api.model.UpdateUserResponse;
 import approval_api.approval_api.model.UserSearchRequest;
 import approval_api.approval_api.model.WebResponse;
+import approval_api.approval_api.resolver.AuthRole;
+import approval_api.approval_api.resolver.Token;
 import approval_api.approval_api.service.UserService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,6 +47,7 @@ public class UserController {
         produces = MediaType.APPLICATION_JSON_VALUE
         )
     public WebResponse<Page<GetUserResponse>> ListUser(
+        @Token String token,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         @RequestParam (value = "name",required = false) String name,
@@ -70,7 +73,7 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse updateUser(@RequestBody UpdateUserRequest request) {
+    public WebResponse updateUser(@Token String token,@RequestBody UpdateUserRequest request) {
         UpdateUserResponse updateUserResponse = userService.update(request);
         return WebResponse.<UpdateUserResponse>
                 builder()
@@ -85,7 +88,7 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse deleteUser(@RequestBody DeleteUserRequest request) {
+    public WebResponse deleteUser(@Token String token,@RequestBody DeleteUserRequest request) {
         userService.delete(request);
         return WebResponse
                 .builder()
