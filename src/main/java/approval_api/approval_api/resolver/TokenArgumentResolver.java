@@ -1,10 +1,8 @@
 package approval_api.approval_api.resolver;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -42,9 +40,6 @@ public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Unauthorized");
             }
 
-            System.out.println(token);
-            UUID userId = extractUserIdFromToken(token);
-            System.out.println(userId);
             
             try {
                 return token;
@@ -62,15 +57,12 @@ public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
         
                 if (userIdString != null) {
                     UUID userId = UUID.fromString(userIdString);
-                    System.out.println("Extracted userId: " + userId);
                     return userId;
                 } else {
-                    System.out.println("UserId not found in token subject");
                     return null;
                 }
             } catch (Exception e) {
-                System.err.println("Error extracting userId from token: " + e.getMessage());
-                return null;
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,"FORBIDDEN",e);
             }
         
     }

@@ -22,6 +22,7 @@ import approval_api.approval_api.model.RespondBookingRequest;
 import approval_api.approval_api.model.UpdateUserRequest;
 import approval_api.approval_api.model.UpdateUserResponse;
 import approval_api.approval_api.model.WebResponse;
+import approval_api.approval_api.resolver.AuthRole;
 import approval_api.approval_api.resolver.Token;
 import approval_api.approval_api.service.AuthService;
 import approval_api.approval_api.service.BookingService;
@@ -41,7 +42,11 @@ public class BookingController {
         produces = MediaType.APPLICATION_JSON_VALUE
 
         )
-    public WebResponse<CreateBookingResponse> register(@Token String token, @RequestBody CreateBookingRequest request){
+    public WebResponse<CreateBookingResponse> register(
+        @Token String token, 
+        @AuthRole("Admin") String role,
+        @RequestBody CreateBookingRequest request
+        ){
         CreateBookingResponse createBookingResponse = bookingService.create(request);
         return WebResponse.<CreateBookingResponse>builder()
             .status("true")
@@ -56,6 +61,7 @@ public class BookingController {
             )
         public WebResponse<Page<GetBookingApporverResponse>> listBookingApprover(
             @Token String token,
+            @AuthRole("Approver") String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam (required = false) BookStatus status
@@ -97,6 +103,7 @@ public class BookingController {
             )
         public WebResponse<Page<GetBookingAdminResponse>> listBookingAdmin(
             @Token String token,
+            @AuthRole("Admin") String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam (required = false) BookStatus status,

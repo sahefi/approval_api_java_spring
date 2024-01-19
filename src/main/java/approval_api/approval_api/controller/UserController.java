@@ -48,6 +48,7 @@ public class UserController {
         )
     public WebResponse<Page<GetUserResponse>> ListUser(
         @Token String token,
+        @AuthRole("Admin") String role,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         @RequestParam (value = "name",required = false) String name,
@@ -73,7 +74,11 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse updateUser(@Token String token,@RequestBody UpdateUserRequest request) {
+    public WebResponse updateUser(
+        @Token String token,
+        @AuthRole("Admin") String role,
+        @RequestBody UpdateUserRequest request
+        ) {
         UpdateUserResponse updateUserResponse = userService.update(request);
         return WebResponse.<UpdateUserResponse>
                 builder()
@@ -88,7 +93,11 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse deleteUser(@Token String token,@RequestBody DeleteUserRequest request) {
+    public WebResponse deleteUser(
+        @Token String token,
+        @AuthRole("Admin") String role,
+        @RequestBody DeleteUserRequest request
+        ) {
         userService.delete(request);
         return WebResponse
                 .builder()

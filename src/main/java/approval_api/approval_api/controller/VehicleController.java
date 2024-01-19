@@ -1,6 +1,5 @@
 package approval_api.approval_api.controller;
 
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +19,7 @@ import approval_api.approval_api.model.GetVehicleResponse;
 import approval_api.approval_api.model.UpdateVehicleRequest;
 import approval_api.approval_api.model.UpdateVehicleResponse;
 import approval_api.approval_api.model.WebResponse;
+import approval_api.approval_api.resolver.AuthRole;
 import approval_api.approval_api.resolver.Token;
 import approval_api.approval_api.service.VehicleService;
 
@@ -36,7 +35,11 @@ public class VehicleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
         )
-    public WebResponse<CreateVehicleResponse> register(@Token String token,@RequestBody CreateVehicleRequest request ){
+    public WebResponse<CreateVehicleResponse> register
+    (@Token String token,
+    @AuthRole("Admin") String role,
+    @RequestBody CreateVehicleRequest request 
+    ){
         CreateVehicleResponse createVehicleResponse = vehicleService.create(request);
         return WebResponse.<CreateVehicleResponse>builder().status("true").message("Success").data(createVehicleResponse).build();
     }
@@ -47,6 +50,7 @@ public class VehicleController {
         )
     public WebResponse<Page<GetVehicleResponse>> ListUser(
         @Token String token,
+        @AuthRole("Admin") String role,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
         ) {
@@ -66,7 +70,11 @@ public class VehicleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse updateVehicle(@Token String token,@RequestBody UpdateVehicleRequest request) {
+    public WebResponse updateVehicle(
+        @Token String token,
+        @AuthRole("Admin") String role,
+        @RequestBody UpdateVehicleRequest request
+        ) {
         UpdateVehicleResponse updateVehicleResponse = vehicleService.update(request);
         return WebResponse.<UpdateVehicleResponse>
                 builder()
@@ -81,7 +89,11 @@ public class VehicleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse deleteUser(@Token String token,@RequestBody DeleteVehicleRequest request) {
+    public WebResponse deleteUser(
+        @Token String token,
+        @AuthRole("Admin") String role,
+        @RequestBody DeleteVehicleRequest request
+        ) {
         vehicleService.delete(request);
         return WebResponse
                 .builder()

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 
-import approval_api.approval_api.common.UserInfo;
+
 import approval_api.approval_api.model.CreateRoleRequest;
 import approval_api.approval_api.model.CreateRoleResponse;
 import approval_api.approval_api.model.DeleteRoleRequest;
@@ -37,7 +37,11 @@ public class RoleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse createRole(@Token String token, @RequestBody CreateRoleRequest request) {
+    public WebResponse createRole(
+        @Token String token,
+        @AuthRole("Admin") String role,
+        @RequestBody CreateRoleRequest request
+        ) {
         CreateRoleResponse createRoleResponse = roleService.create(request);
         return WebResponse.<CreateRoleResponse>
                 builder()
@@ -72,7 +76,11 @@ public class RoleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse updateRole(@Token String token ,@RequestBody UpdateRoleRequest request) {
+    public WebResponse updateRole(
+        @Token String token ,
+        @AuthRole("Admin") String role,
+        @RequestBody UpdateRoleRequest request
+        ) {
         UpdateRoleResponse updateRoleResponse = roleService.update(request);
         return WebResponse.<UpdateRoleResponse>
                 builder()
@@ -87,7 +95,11 @@ public class RoleController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse deleteRole(@Token String token,@RequestBody DeleteRoleRequest request) {
+    public WebResponse deleteRole(
+        @Token String token,
+        @AuthRole("Admin") String role,
+        @RequestBody DeleteRoleRequest request
+        ) {
         roleService.delete(request);
         return WebResponse
                 .builder()
